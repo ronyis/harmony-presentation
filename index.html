@@ -480,12 +480,12 @@
 						<div class="item">
 							<span class="emoji">📡</span>
 							<strong>Streaming</strong><br/>
-							Real-time response streaming to clients
+							Message-by-message response delivery
 						</div>
 						<div class="item">
 							<span class="emoji">🔭</span>
 							<strong>Observability</strong><br/>
-							Built-in OpenTelemetry instrumentation
+							OpenTelemetry + Logfire instrumentation
 						</div>
 						<div class="item">
 							<span class="emoji">🧩</span>
@@ -501,45 +501,46 @@
 					<aside class="notes">
 						The Agent Engine wraps PydanticAI — a type-safe agent
 						framework by the Pydantic team. We added persistence,
-						streaming, observability, and our toolkit system on top.
+						message-by-message streaming, observability, and our
+						toolkit system on top.
 					</aside>
 				</section>
 
-				<!-- Slide: One call to rule them all -->
+				<!-- Slide: The Agent Loop -->
 				<section>
-					<h2>One Call to <span class="c-gold">Rule Them All</span></h2>
-					<div class="comparison" style="max-width: 900px; margin: 20px auto;">
+					<h2>The <span class="c-gold">Agent Run</span></h2>
+					<div class="comparison" style="max-width: 900px; margin: 20px auto; font-size: 0.7em;">
 						<div class="before">
-							<h3 class="c-red">Before</h3>
-							<div class="flow" style="flex-direction: column; gap: 6px; font-size: 0.9em;">
-								<div class="step" style="width: 100%;">LLM Call → classify</div>
-								<div class="arrow" style="transform: rotate(90deg);">→</div>
-								<div class="step" style="width: 100%;">LLM Call → extract</div>
-								<div class="arrow" style="transform: rotate(90deg);">→</div>
-								<div class="step" style="width: 100%;">LLM Call → respond</div>
-							</div>
-							<p class="c-red" style="margin-top: 12px;">3+ LLM round-trips</p>
+							<h3 class="c-red">Before: Fixed Workflow</h3>
+							<p style="line-height: 2.2; margin-top: 15px;">
+								LLM Call <span class="c-dim">→ classify</span><br/>
+								<span class="c-red" style="font-size: 1.2em;">↓</span><br/>
+								LLM Call <span class="c-dim">→ extract</span><br/>
+								<span class="c-red" style="font-size: 1.2em;">↓</span><br/>
+								LLM Call <span class="c-dim">→ respond</span>
+							</p>
+							<p class="c-red" style="margin-top: 15px;">Predefined workflow</p>
 						</div>
 						<div class="after">
-							<h3 class="c-deps">After</h3>
-							<div style="text-align: center; margin: 20px 0;">
-								<div class="step" style="display: inline-block; padding: 20px 30px; border-color: var(--deps-color); font-size: 0.9em;">
-									Single LLM Call<br/>
-									<span class="c-dim">with tools attached</span>
-								</div>
-							</div>
-							<p style="font-size: 0.85em; color: #ccc; margin-top: 12px;">
-								The LLM decides which tools to call.<br/>
-								Classify + extract + act + respond — all in one.
+							<h3 class="c-deps">After: Agent Loop</h3>
+							<p style="line-height: 2.2; margin-top: 15px;">
+								<span class="c-gold">LLM Step</span> <span class="c-dim">→ text + tool calls</span><br/>
+								<span class="c-gold" style="font-size: 1.2em;">↓</span> <span class="c-dim">tool call?</span><br/>
+								<span class="c-toolkit">Execute Tool</span> <span class="c-dim">→ result</span><br/>
+								<span class="c-gold" style="font-size: 1.2em;">↻</span> <span class="c-dim">loop back to LLM</span><br/>
+								<span class="c-deps">Final Response</span> <span class="c-dim">→ done</span>
 							</p>
-							<p class="c-deps" style="margin-top: 12px;">1 LLM invocation</p>
+							<p class="c-deps" style="margin-top: 15px;">Dynamic loop<br/>agent decides when to stop</p>
 						</div>
 					</div>
 					<aside class="notes">
-						The key insight: instead of multiple LLM calls in a chain,
-						use a single LLM invocation with tools. The model itself
-						decides what to do — classify, extract, call APIs, respond.
-						All in one shot. Dramatically faster.
+						Before: a fixed chain of separate LLM calls — classify,
+						extract, respond. Each step is a separate invocation with
+						no flexibility. After: an agentic loop. The LLM produces
+						text and optionally calls tools. Tool results loop back
+						for the next step. The agent can generate messages between
+						tool calls, and decides when the run is done. The model
+						is in control, not a hardcoded pipeline.
 					</aside>
 				</section>
 
@@ -613,6 +614,115 @@
 					</aside>
 				</section>
 
+				<!-- Slide: Pod-level agent registry -->
+				<section>
+					<h2>Scaling: <span class="c-gold">Agent Registry</span></h2>
+					<p class="medium" style="margin-bottom: 20px;">
+						Each pod keeps an in-memory registry of active agents, keyed by <code style="color: var(--threads-color);">thread_id</code>
+					</p>
+					<div class="arch-diagram" style="font-size: 0.55em;">
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--accent-gold); min-width: 250px;">
+								<strong>SQS Queue</strong><br/>
+								<span class="c-dim">messages from threads</span>
+							</div>
+						</div>
+						<div class="arch-arrow" style="width: 100%; text-align: center;">↓ <span style="font-size: 0.5em; color: #aaa;">messageGroupId: thread_id</span></div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								<strong>Pod A</strong><br/>
+								<span class="c-dim">Registry</span><br/>
+								<span class="c-toolkit">thread_1 → Agent</span><br/>
+								<span class="c-toolkit">thread_2 → Agent</span>
+							</div>
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								<strong>Pod B</strong><br/>
+								<span class="c-dim">Registry</span><br/>
+								<span class="c-toolkit">thread_2 → Agent</span><br/>
+								<span class="c-toolkit">thread_3 → Agent</span>
+							</div>
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								<strong>Pod C</strong><br/>
+								<span class="c-dim">Registry</span><br/>
+								<span class="c-toolkit">thread_1 → Agent</span><br/>
+								<span class="c-toolkit">thread_4 → Agent</span>
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--deps-color); min-width: 350px;">
+								<strong>PostgreSQL</strong><br/>
+								<span class="c-dim">Messages + state persisted — any pod can resume any thread</span>
+							</div>
+						</div>
+					</div>
+					<div class="fragment" style="margin-top: 20px;">
+						<ul class="medium" style="max-width: 700px; margin: 0 auto;">
+							<li><span class="c-gold">Cache hit</span> — pod already has this thread's agent → reuse it (reload state from DB)</li>
+							<li><span class="c-gold">Cache miss</span> — create a new agent</li>
+
+						</ul>
+					</div>
+					<aside class="notes">
+						Messages arrive via SQS, so any pod can pick up any
+						message — there's no sharding or affinity. Each pod
+						maintains an in-memory registry mapping thread_id to a
+						live agent instance. If the pod has already handled this
+						thread, it reuses the cached agent. Otherwise, it creates
+						a new one and loads messages and state from Postgres.
+						The database is the source of truth — the registry is
+						just an optimization.
+					</aside>
+				</section>
+
+				<!-- Slide: Persistence -->
+				<section>
+					<h2><span class="c-threads">Persistence</span></h2>
+					<p class="medium" style="margin-bottom: 10px;">
+						Every agent run is saved to PostgreSQL — one row per run
+					</p>
+					<div class="comparison" style="max-width: 950px; margin: 0 auto; font-size: 0.65em; align-items: start;">
+						<div class="card" style="border-left: 4px solid var(--threads-color);">
+							<h3 class="c-threads" style="margin-top: 0;">agents.runs</h3>
+							<div class="anatomy-block" style="font-size: 0.95em; padding: 14px; line-height: 1.8;">
+								<span class="c-gold">id</span>: <span class="c-dim">UUID7 (time-ordered)</span><br/>
+								<span class="c-gold">tenant_id</span>: <span class="c-dim">UUID</span><br/>
+								<span class="c-gold">thread_id</span>: <span class="c-dim">UUID</span><br/>
+								<span class="c-gold">messages</span>: <span class="c-dim">JSONB</span><br/>
+								<span class="c-gold">state</span>: <span class="c-dim">JSONB</span><br/>
+								<span class="c-gold">metadata</span>: <span class="c-dim">JSONB</span><br/>
+								<span class="c-gold">created_at</span>: <span class="c-dim">timestamp</span>
+							</div>
+							<p style="margin-top: 10px; color: #aaa;">Full thread history = all rows ordered by UUID7</p>
+						</div>
+						<div style="display: flex; flex-direction: column; gap: 16px;">
+							<div class="card" style="border-left: 4px solid var(--deps-color);">
+								<h3 class="c-deps" style="margin-top: 0;">State</h3>
+								<div class="anatomy-block" style="font-size: 0.95em; padding: 14px; line-height: 1.8;">
+									<span class="c-deps">reporter_id</span><br/>
+									<span class="c-deps">primary_employee_id</span><br/>
+									<span class="c-deps">ticket_id</span><br/>
+									<span class="c-deps">loaded_skills</span>
+								</div>
+							</div>
+							<div class="card" style="border-left: 4px solid var(--toolkit-color);">
+								<h3 class="c-toolkit" style="margin-top: 0;">Messages</h3>
+								<p style="color: #ccc; margin: 0;">Structured user message, agent response & all tool calls</p>
+								<p style="margin: 8px 0 0; color: #aaa;">System prompt excluded</p>
+							</div>
+						</div>
+					</div>
+					<aside class="notes">
+						Every agent run persists one row to Postgres. Messages
+						include the structured user message, the agent's response,
+						and all tool calls — but system prompts are stripped before
+						saving. State is the latest snapshot with fields like
+						reporter, employee, ticket, and loaded skills. Metadata
+						is currently used for evals. Full thread history is just
+						all rows for a thread, ordered by UUID7.
+					</aside>
+				</section>
+
 				<!-- Slide: Four pillars -->
 				<section>
 					<h2>The Four Pillars</h2>
@@ -626,7 +736,7 @@
 							<p>Runtime conditions that activate or deactivate toolkits</p>
 						</div>
 						<div class="pillar" style="background: rgba(129,199,132,0.15); border: 1px solid var(--deps-color);">
-							<h4 class="c-deps">📦 Props</h4>
+							<h4 class="c-deps">📦 Dependencies</h4>
 							<p>Lazy-loaded dependency injection for toolkit services</p>
 						</div>
 						<div class="pillar" style="background: rgba(206,147,216,0.15); border: 1px solid var(--threads-color);">
@@ -639,7 +749,7 @@
 					</p>
 					<aside class="notes">
 						The engine is built on four pillars. Toolkits for modularity,
-						gates for conditional activation, props for dependency
+						gates for conditional activation, dependencies for lazy
 						injection, and persistent state. Let's look at each.
 					</aside>
 				</section>
@@ -832,10 +942,6 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;return <span class="c-red">None</span>&nbsp;&nbsp;<span class="c-dim"># Tool hidden from LLM</span><br/>
 						&nbsp;&nbsp;return <span class="c-deps">tool_def</span>&nbsp;&nbsp;<span class="c-dim"># Tool visible</span>
 					</div>
-					<p class="fragment medium" style="margin-top: 25px;">
-						Prevents the agent from making mistakes<br/>
-						<span class="c-dim">(e.g., creating duplicate tickets)</span>
-					</p>
 					<aside class="notes">
 						Beyond toolkit-level gates, we have tool-level prepare
 						callbacks. This example hides the "create ticket" tool
@@ -846,10 +952,10 @@
 
 				<!-- Section 5: Props -->
 				<section class="section-title">
-					<h2>Props</h2>
+					<h2>Dependencies</h2>
 					<h3>"Everything You Need, When You Need It"</h3>
 					<aside class="notes">
-						Props — our dependency injection system. Like a squire's
+						Dependencies — our dependency injection system. Like a squire's
 						pack: you only unpack what you need for the current fight.
 					</aside>
 				</section>
@@ -882,7 +988,7 @@
 
 				<!-- Slide: How it works -->
 				<section>
-					<h2>How <span class="c-deps">Props</span> Work</h2>
+					<h2>How <span class="c-deps">Dependencies</span> Work</h2>
 					<div class="arch-diagram" style="font-size: 0.6em;">
 						<div class="arch-row">
 							<div class="arch-box" style="border-color: var(--toolkit-color);">
@@ -959,79 +1065,46 @@
 					</aside>
 				</section>
 
-				<!-- Section 6: Impact -->
-				<section class="section-title">
-					<h2>Impact</h2>
-					<h3>What we achieved</h3>
-				</section>
-
-				<!-- Slide: Speed -->
+				<!-- Slide: Skills -->
 				<section>
-					<h2><span class="c-deps">Speed</span></h2>
-					<div style="display: flex; justify-content: center; gap: 60px; align-items: center; margin: 40px 0;">
-						<div style="text-align: center;">
-							<div style="font-size: 3.5em; color: var(--danger-red);">3+</div>
-							<p class="medium c-dim">LLM calls before</p>
+					<p style="font-family: 'Inter', sans-serif; color: var(--accent-gold); font-style: italic; font-size: 0.9em; margin-bottom: 0.3em;">Coming soon</p>
+					<h2>Skills — <span class="c-toolkit">Dynamic Toolkits</span></h2>
+					<p class="medium" style="margin-bottom: 20px;">
+						A Skill is a Toolkit that starts <strong>dormant</strong> and is activated mid-conversation
+					</p>
+					<div class="flow" style="margin: 30px 0; flex-wrap: nowrap;">
+						<div class="step" style="border-color: var(--toolkit-color); flex: 1;">
+							<span class="c-toolkit">Skills Catalog</span><br/>
+							<span class="c-dim">shows available descriptions</span>
 						</div>
-						<div style="font-size: 2em; color: var(--accent-gold);">→</div>
-						<div style="text-align: center;">
-							<div style="font-size: 3.5em; color: var(--deps-color);">1</div>
-							<p class="medium c-dim">LLM call now</p>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--accent-gold); flex: 1;">
+							<span class="c-gold">load_skill</span><br/>
+							<span class="c-dim">activates silently</span>
+						</div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--deps-color); flex: 1;">
+							<span class="c-deps">Tools Unlocked</span><br/>
+							<span class="c-dim">tools & instructions active</span>
 						</div>
 					</div>
-					<p class="fragment medium">
-						Single invocation with tool-calling.<br/>
-						The model decides, acts, and responds — all at once.
-					</p>
-					<aside class="notes">
-						The headline number: from 3+ LLM calls per message down
-						to 1. The model itself figures out the intent, calls the
-						right tools, and crafts the response — all in a single turn.
-					</aside>
-				</section>
-
-				<!-- Slide: Problem solver -->
-				<section>
-					<h2>From Tickets to <span class="c-deps">Solutions</span></h2>
-					<div class="icon-grid" style="max-width: 900px; margin: 20px auto; grid-template-columns: repeat(3, 1fr);">
-						<div class="item" style="border-color: var(--deps-color);">
-							<span class="emoji">🔑</span>
-							<strong>Password Resets</strong><br/>
-							Directly via Okta/Entra
-						</div>
-						<div class="item" style="border-color: var(--deps-color);">
-							<span class="emoji">🚪</span>
-							<strong>App Access</strong><br/>
-							Grant access instantly
-						</div>
-						<div class="item" style="border-color: var(--deps-color);">
-							<span class="emoji">📚</span>
-							<strong>KB Search</strong><br/>
-							Find answers in knowledge base
-						</div>
-						<div class="item" style="border-color: var(--deps-color);">
-							<span class="emoji">📱</span>
-							<strong>MFA Reset</strong><br/>
-							Reset multi-factor auth
-						</div>
-						<div class="item" style="border-color: var(--deps-color);">
-							<span class="emoji">💻</span>
-							<strong>Device Recovery</strong><br/>
-							Remote device actions
-						</div>
-						<div class="item" style="border-color: var(--deps-color);">
-							<span class="emoji">🔓</span>
-							<strong>Account Unlock</strong><br/>
-							Unlock locked accounts
-						</div>
+					<div class="fragment" style="max-width: 750px; margin: 25px auto;">
+						<ul class="medium">
+							<li>The LLM decides when to load a skill based on user intent</li>
+							<li>Loaded skills <span class="c-deps">persist in state</span> across runs</li>
+							<li>Avoiding <span class="c-gold">context bloat</span></li>
+						</ul>
 					</div>
-					<p class="fragment medium" style="margin-top: 15px;">
-						Users get <span class="c-deps">real help</span>, not just a ticket number.
-					</p>
 					<aside class="notes">
-						The agent now actually solves problems. Need a password
-						reset? Done. App access? Granted. These used to be
-						"create a ticket and wait" — now they're instant.
+						Skills are dynamic toolkits. They're registered with the
+						agent but start dormant — tools hidden, instructions not
+						injected. A dynamic catalog is injected into the prompt
+						listing available skills. When the user's request matches
+						a skill, the LLM calls load_skill silently. From that
+						point on, the skill's tools and instructions are active.
+						This keeps the LLM's context lean — only the capabilities
+						it needs are loaded. Loaded skills persist in state, so
+						they survive across conversation turns.
 					</aside>
 				</section>
 
@@ -1069,7 +1142,12 @@
 						<div class="item">
 							<span class="emoji">🔭</span>
 							<strong>OpenTelemetry</strong><br/>
-							Every tool call traced end-to-end
+							Standard OTEL tracing with tenant & thread context via baggage
+						</div>
+						<div class="item">
+							<span class="emoji">🔥</span>
+							<strong>Logfire</strong><br/>
+							Per-agent instrumentation with distributed tracing of LLM calls & tools
 						</div>
 						<div class="item">
 							<span class="emoji">📊</span>
@@ -1086,10 +1164,12 @@
 						When something goes wrong, we can trace exactly what happened.
 					</p>
 					<aside class="notes">
-						Observability is baked in. Every agent run is traced with
-						OTEL, every tool call is logged with structured context,
-						and the full conversation state is persisted in Postgres
-						for replay and debugging.
+						Observability is baked in at two levels. Standard OpenTelemetry
+						provides tracing with tenant_id and thread_id propagated via
+						baggage. Logfire adds per-agent instrumentation with deep
+						visibility into LLM calls, tool invocations, and streaming.
+						On top of that, structured logging and full state persistence
+						in Postgres for replay and debugging.
 					</aside>
 				</section>
 
