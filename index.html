@@ -7,20 +7,2142 @@
 			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 		/>
 
-		<title>reveal.js</title>
+		<title>The Quest for a Better Helpdesk</title>
 
 		<link rel="stylesheet" href="dist/reset.css" />
 		<link rel="stylesheet" href="dist/reveal.css" />
-		<link rel="stylesheet" href="dist/theme/black.css" />
-
-		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="dist/theme/night.css" />
 		<link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+
+		<!-- Google Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+
+		<style>
+			:root {
+				--toolkit-color: #4fc3f7;
+				--gate-color: #ffb74d;
+				--deps-color: #81c784;
+				--threads-color: #ce93d8;
+				--accent-gold: #d4a54a;
+				--danger-red: #ef5350;
+				--bg-dark: #1a1a2e;
+				--bg-card: rgba(255, 255, 255, 0.05);
+			}
+
+			.reveal h1, .reveal h2 {
+				font-family: 'Cinzel', serif;
+				text-transform: none;
+			}
+			.reveal h3, .reveal h4, .reveal p, .reveal li, .reveal td, .reveal th {
+				font-family: 'Inter', sans-serif;
+			}
+			.reveal h1 { font-size: 2.2em; }
+			.reveal h2 { font-size: 1.6em; }
+			.reveal h3 { font-size: 1.2em; font-weight: 600; }
+
+			/* Section title slides */
+			.section-title h2 {
+				color: var(--accent-gold);
+				font-size: 2em;
+				margin-bottom: 0.3em;
+			}
+			.section-title h3 {
+				color: #aaa;
+				font-weight: 300;
+				font-style: italic;
+			}
+
+			/* Cards */
+			.card {
+				background: var(--bg-card);
+				border-radius: 12px;
+				padding: 24px;
+				border: 1px solid rgba(255,255,255,0.1);
+			}
+
+			/* Comparison grid */
+			.comparison {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 30px;
+				text-align: left;
+			}
+			.comparison .before {
+				border-left: 4px solid var(--danger-red);
+				padding-left: 20px;
+			}
+			.comparison .after {
+				border-left: 4px solid var(--deps-color);
+				padding-left: 20px;
+			}
+			.comparison h3 { margin-top: 0; }
+
+			/* Color labels */
+			.c-toolkit { color: var(--toolkit-color); }
+			.c-gate { color: var(--gate-color); }
+			.c-deps { color: var(--deps-color); }
+			.c-threads { color: var(--threads-color); }
+			.c-gold { color: var(--accent-gold); }
+			.c-red { color: var(--danger-red); }
+			.c-dim { color: #888; }
+
+			/* Icon grid */
+			.icon-grid {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 16px;
+				font-size: 0.55em;
+			}
+			.icon-grid .item {
+				background: var(--bg-card);
+				border-radius: 10px;
+				padding: 14px 10px;
+				border: 1px solid rgba(255,255,255,0.08);
+				text-align: center;
+			}
+			.icon-grid .item .emoji {
+				font-size: 2em;
+				display: block;
+				margin-bottom: 6px;
+			}
+
+			/* Flow diagrams */
+			.flow {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				flex-wrap: wrap;
+				font-size: 0.65em;
+			}
+			.flow .step {
+				background: var(--bg-card);
+				border: 1px solid rgba(255,255,255,0.15);
+				border-radius: 8px;
+				padding: 10px 16px;
+			}
+			.flow .arrow { color: var(--accent-gold); font-size: 1.4em; }
+
+			/* Emoji status row */
+			.emoji-row {
+				display: flex;
+				justify-content: center;
+				gap: 40px;
+				margin-top: 20px;
+			}
+			.emoji-row .emoji-item {
+				text-align: center;
+				font-size: 0.65em;
+			}
+			.emoji-row .emoji-item .big {
+				font-size: 3em;
+				display: block;
+				margin-bottom: 8px;
+			}
+
+			/* Lists */
+			.reveal ul { list-style: none; padding-left: 0; }
+			.reveal ul li::before {
+				content: "→ ";
+				color: var(--accent-gold);
+				font-weight: bold;
+			}
+			.reveal ul.plain li::before { content: ""; }
+
+			/* Small helper */
+			.small { font-size: 0.6em; color: #888; }
+			.medium { font-size: 0.75em; }
+
+			/* Pillar boxes */
+			.pillars {
+				display: grid;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 16px;
+				font-size: 0.55em;
+			}
+			.pillars .pillar {
+				border-radius: 10px;
+				padding: 18px 12px;
+				text-align: center;
+			}
+			.pillars .pillar h4 {
+				margin: 0 0 8px 0;
+				font-size: 1.2em;
+			}
+			.pillars .pillar p { margin: 0; color: #ccc; }
+
+			/* Anatomy code block */
+			.anatomy-block {
+				background: #0d1117;
+				border-radius: 10px;
+				padding: 20px;
+				text-align: left;
+				font-family: 'Fira Code', monospace;
+				font-size: 0.5em;
+				line-height: 1.6;
+				border: 1px solid rgba(255,255,255,0.1);
+			}
+
+			/* Architecture diagram boxes */
+			.arch-diagram {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 12px;
+				font-size: 0.55em;
+			}
+			.arch-row {
+				display: flex;
+				gap: 12px;
+				justify-content: center;
+			}
+			.arch-box {
+				background: var(--bg-card);
+				border-radius: 8px;
+				padding: 12px 20px;
+				border: 1px solid rgba(255,255,255,0.15);
+				text-align: center;
+				min-width: 120px;
+			}
+			.arch-arrow {
+				color: var(--accent-gold);
+				font-size: 1.5em;
+			}
+
+			/* Hero card */
+			.hero-cards {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 40px;
+				text-align: center;
+			}
+			.hero-card {
+				background: var(--bg-card);
+				border-radius: 16px;
+				padding: 30px;
+				border: 1px solid rgba(255,255,255,0.1);
+			}
+			.hero-card .hero-emoji { font-size: 4em; }
+			.hero-card h3 { margin: 10px 0 5px; }
+			.hero-card .subtitle {
+				color: var(--accent-gold);
+				font-style: italic;
+				font-size: 0.85em;
+			}
+			.hero-card p { color: #bbb; font-size: 0.75em; }
+
+			/* Agenda */
+			.agenda {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 30px;
+				text-align: left;
+			}
+			.agenda-item {
+				background: var(--bg-card);
+				border-radius: 14px;
+				padding: 28px;
+				border: 1px solid rgba(255,255,255,0.1);
+			}
+			.agenda-item .num {
+				font-family: 'Cinzel', serif;
+				font-size: 2em;
+				color: var(--accent-gold);
+			}
+			.agenda-item h3 { margin: 8px 0; }
+			.agenda-item p { color: #aaa; font-size: 0.7em; margin: 0; }
+		</style>
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+
+				<!-- ============================================ -->
+				<!-- OPENING: A KNIGHT'S TALE                     -->
+				<!-- ============================================ -->
+
+				<!-- Slide 1: Title -->
+				<section>
+					<h1 style="margin-bottom: 0.1em;">The Quest for a<br/><span class="c-gold">Better Helpdesk</span></h1>
+					<p class="medium" style="color: #aaa; margin-top: 0.5em;">
+						A tale of two builders and the systems they forged
+					</p>
+					<p class="small" style="margin-top: 2em;">
+						Inspired by <em>A Knight of the Seven Kingdoms</em>
+					</p>
+					<aside class="notes">
+						Welcome everyone. This is the story of how we rebuilt
+						two core systems at Harmony — the Agent Engine and
+						the Communication Layer. We'll frame it as a journey.
+					</aside>
+				</section>
+
+				<!-- Slide 2: Meet the Heroes -->
+				<section>
+					<h2>Meet the Heroes</h2>
+					<div class="hero-cards">
+						<div class="hero-card">
+							<div class="hero-emoji">🛡️</div>
+							<h3>Ron</h3>
+							<div class="subtitle">Ser Dunk the Tall</div>
+							<p>The steadfast knight — charging headfirst into battle with unwavering determination</p>
+						</div>
+						<div class="hero-card">
+							<div class="hero-emoji">🥚</div>
+							<h3>Haim</h3>
+							<div class="subtitle">Egg</div>
+							<p>The clever squire — small but sharp, always three steps ahead</p>
+						</div>
+					</div>
+					<aside class="notes">
+						Quick character intro. Ron is Dunk — the tall, brave
+						one who dives in. Haim is Egg — strategic, always
+						thinking ahead. Together they took on two big quests.
+					</aside>
+				</section>
+
+				<!-- Slide 3: Agenda -->
+				<section>
+					<h2>The Quest Ahead</h2>
+					<div class="agenda">
+						<div class="agenda-item">
+							<div class="num">I</div>
+							<h3>The Agent Engine</h3>
+							<p>From slow multi-step chains to a single intelligent agent with 15 capabilities</p>
+						</div>
+						<div class="agenda-item">
+							<div class="num">II</div>
+							<h3>The Communication Layer</h3>
+							<p>From scattered messages to a unified thread system across all channels</p>
+						</div>
+					</div>
+					<aside class="notes">
+						Two major systems. First we'll cover the Agent Engine —
+						how we went from multiple LLM calls to one smart agent.
+						Then the Communication Layer — how we unified all
+						messaging into a single source of truth.
+					</aside>
+				</section>
+
+				<!-- ============================================ -->
+				<!-- PART I: THE AGENT ENGINE                    -->
+				<!-- ============================================ -->
+
+				<!-- Section 1: The Problem -->
+				<section class="section-title">
+					<h2>Part I: The Agent Engine</h2>
+					<h3>"Before the Quest Began"</h3>
+					<aside class="notes">
+						Let's start with the Agent Engine. To understand why we
+						built it, we need to understand what we had before.
+					</aside>
+				</section>
+
+				<!-- Slide: Multi-step LLM calls -->
+				<section>
+					<h2>The Old Way: <span class="c-red">Multi-Step Chains</span></h2>
+					<div class="flow" style="margin: 30px 0;">
+						<div class="step">User Message</div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--danger-red);">LLM Call 1<br/><span class="c-dim">Classify intent</span></div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--danger-red);">LLM Call 2<br/><span class="c-dim">Extract entities</span></div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--danger-red);">LLM Call 3<br/><span class="c-dim">Generate response</span></div>
+						<div class="arrow">→</div>
+						<div class="step">Response</div>
+					</div>
+					<div class="fragment" style="margin-top: 30px;">
+						<p class="medium">Each step = a separate LLM invocation</p>
+						<p class="c-red medium">Slow. Expensive. Fragile.</p>
+					</div>
+					<aside class="notes">
+						The old agent used a multi-step chain. Each user message
+						triggered 3+ separate LLM calls. Classify, extract, respond.
+						Each call added latency. If one failed, the whole chain broke.
+					</aside>
+				</section>
+
+				<!-- Slide: Ticket-creating machine -->
+				<section>
+					<h2>A <span class="c-red">Ticket-Creating</span> Machine</h2>
+					<div style="font-size: 4em; margin: 20px 0;">🎫</div>
+					<div class="comparison" style="max-width: 800px; margin: 0 auto;">
+						<div class="before">
+							<h3 class="c-red">What it did</h3>
+							<p class="medium">Collected information from the user and created a ticket</p>
+							<p class="medium c-dim" style="margin-top: 10px;">That's it. Nothing else.</p>
+						</div>
+						<div class="after" style="border-color: var(--accent-gold);">
+							<h3 class="c-gold">What users wanted</h3>
+							<p class="medium">Reset my password</p>
+							<p class="medium">Give me access to an app</p>
+							<p class="medium">Unlock my account</p>
+							<p class="medium">Find information in the KB</p>
+						</div>
+					</div>
+					<aside class="notes">
+						The agent's only purpose was to create a ticket. User asks
+						for a password reset? Create a ticket. App access? Ticket.
+						Users wanted actual help, not a ticket-creation form.
+					</aside>
+				</section>
+
+				<!-- Slide: Context scattered -->
+				<section>
+					<h2>Context <span class="c-red">Everywhere</span>, Answers Nowhere</h2>
+					<div class="icon-grid" style="max-width: 700px; margin: 30px auto;">
+						<div class="item">
+							<span class="emoji">🔗</span>
+							<strong>LLM Call 1</strong><br/>
+							Has intent, loses details
+						</div>
+						<div class="item">
+							<span class="emoji">🔗</span>
+							<strong>LLM Call 2</strong><br/>
+							Has entities, lost intent
+						</div>
+						<div class="item">
+							<span class="emoji">🔗</span>
+							<strong>LLM Call 3</strong><br/>
+							Gets summary, lost nuance
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 20px;">
+						No persistent memory between sessions.<br/>
+						Each call saw a <span class="c-red">fraction</span> of the conversation.
+					</p>
+					<aside class="notes">
+						Context was split across calls. Each LLM call only saw
+						what was explicitly passed to it. No persistent state
+						between conversations. No memory of previous interactions.
+					</aside>
+				</section>
+
+				<!-- Slide: The cost -->
+				<section>
+					<h2>The Cost</h2>
+					<div class="icon-grid" style="max-width: 900px; margin: 30px auto;">
+						<div class="item" style="border-color: var(--danger-red);">
+							<span class="emoji">🐌</span>
+							<strong>Slow</strong><br/>
+							Multiple round-trips to the LLM per message
+						</div>
+						<div class="item" style="border-color: var(--danger-red);">
+							<span class="emoji">🔒</span>
+							<strong>Limited</strong><br/>
+							Could only create tickets, not actually help
+						</div>
+						<div class="item" style="border-color: var(--danger-red);">
+							<span class="emoji">😤</span>
+							<strong>Frustrating</strong><br/>
+							Users got forms, not solutions
+						</div>
+					</div>
+					<aside class="notes">
+						The bottom line: slow response times, limited capability,
+						and frustrated users who wanted real help, not ticket forms.
+						We needed a fundamental rethink.
+					</aside>
+				</section>
+
+				<!-- Section 2: The Solution -->
+				<section class="section-title">
+					<h2>Forging the Engine</h2>
+					<h3>The solution we built</h3>
+					<aside class="notes">
+						So we set out to build something better. Enter the Agent Engine.
+					</aside>
+				</section>
+
+				<!-- Slide: What is AgentEngine -->
+				<section>
+					<h2>The <span class="c-toolkit">Agent Engine</span></h2>
+					<p class="medium" style="margin-bottom: 20px;">
+						A managed wrapper around <strong>PydanticAI</strong> with Harmony superpowers
+					</p>
+					<div class="icon-grid" style="max-width: 900px; margin: 0 auto;">
+						<div class="item">
+							<span class="emoji">🧠</span>
+							<strong>PydanticAI Core</strong><br/>
+							Type-safe agent framework with tool calling
+						</div>
+						<div class="item">
+							<span class="emoji">💾</span>
+							<strong>Persistence</strong><br/>
+							PostgreSQL-backed state & message history
+						</div>
+						<div class="item">
+							<span class="emoji">📡</span>
+							<strong>Streaming</strong><br/>
+							Real-time response streaming to clients
+						</div>
+						<div class="item">
+							<span class="emoji">🔭</span>
+							<strong>Observability</strong><br/>
+							Built-in OpenTelemetry instrumentation
+						</div>
+						<div class="item">
+							<span class="emoji">🧩</span>
+							<strong>Toolkits</strong><br/>
+							Modular capability bundles
+						</div>
+						<div class="item">
+							<span class="emoji">⚡</span>
+							<strong>Bedrock</strong><br/>
+							Auto-configured AWS Bedrock models
+						</div>
+					</div>
+					<aside class="notes">
+						The Agent Engine wraps PydanticAI — a type-safe agent
+						framework by the Pydantic team. We added persistence,
+						streaming, observability, and our toolkit system on top.
+					</aside>
+				</section>
+
+				<!-- Slide: One call to rule them all -->
+				<section>
+					<h2>One Call to <span class="c-gold">Rule Them All</span></h2>
+					<div class="comparison" style="max-width: 900px; margin: 20px auto;">
+						<div class="before">
+							<h3 class="c-red">Before</h3>
+							<div class="flow" style="flex-direction: column; gap: 6px; font-size: 0.9em;">
+								<div class="step" style="width: 100%;">LLM Call → classify</div>
+								<div class="arrow" style="transform: rotate(90deg);">→</div>
+								<div class="step" style="width: 100%;">LLM Call → extract</div>
+								<div class="arrow" style="transform: rotate(90deg);">→</div>
+								<div class="step" style="width: 100%;">LLM Call → respond</div>
+							</div>
+							<p class="c-red" style="margin-top: 12px;">3+ LLM round-trips</p>
+						</div>
+						<div class="after">
+							<h3 class="c-deps">After</h3>
+							<div style="text-align: center; margin: 20px 0;">
+								<div class="step" style="display: inline-block; padding: 20px 30px; border-color: var(--deps-color); font-size: 0.9em;">
+									Single LLM Call<br/>
+									<span class="c-dim">with tools attached</span>
+								</div>
+							</div>
+							<p style="font-size: 0.85em; color: #ccc; margin-top: 12px;">
+								The LLM decides which tools to call.<br/>
+								Classify + extract + act + respond — all in one.
+							</p>
+							<p class="c-deps" style="margin-top: 12px;">1 LLM invocation</p>
+						</div>
+					</div>
+					<aside class="notes">
+						The key insight: instead of multiple LLM calls in a chain,
+						use a single LLM invocation with tools. The model itself
+						decides what to do — classify, extract, call APIs, respond.
+						All in one shot. Dramatically faster.
+					</aside>
+				</section>
+
+				<!-- Slide: From ticket creator to problem solver -->
+				<section>
+					<h2>From Ticket Machine to <span class="c-deps">Problem Solver</span></h2>
+					<p class="medium" style="margin-bottom: 15px;">15 toolkits = 15 real capabilities</p>
+					<div class="icon-grid" style="max-width: 950px; margin: 0 auto; grid-template-columns: repeat(5, 1fr);">
+						<div class="item"><span class="emoji">📚</span>Knowledge Base</div>
+						<div class="item"><span class="emoji">🎫</span>Tickets</div>
+						<div class="item"><span class="emoji">📋</span>Service Catalog</div>
+						<div class="item"><span class="emoji">💻</span>Device Mgmt</div>
+						<div class="item"><span class="emoji">🔄</span>Device Recovery</div>
+						<div class="item"><span class="emoji">👤</span>IDP Status</div>
+						<div class="item"><span class="emoji">🔑</span>Password Reset</div>
+						<div class="item"><span class="emoji">🔓</span>Account Unlock</div>
+						<div class="item"><span class="emoji">📱</span>MFA Reset</div>
+						<div class="item"><span class="emoji">🔍</span>App Search</div>
+						<div class="item"><span class="emoji">🚪</span>App Access</div>
+						<div class="item"><span class="emoji">👥</span>Group Members</div>
+						<div class="item"><span class="emoji">🔎</span>Employee Search</div>
+						<div class="item"><span class="emoji">🚫</span>Termination</div>
+						<div class="item"><span class="emoji">🎯</span>Target Employee</div>
+					</div>
+					<aside class="notes">
+						The agent can now actually DO things. Password resets,
+						app access management, device recovery, KB searches —
+						15 distinct capabilities, each as a modular toolkit.
+					</aside>
+				</section>
+
+				<!-- Slide: Architecture overview -->
+				<section>
+					<h2>Architecture Overview</h2>
+					<div class="arch-diagram">
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: #666;">HTTP Request</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--threads-color);">Helpdesk Service<br/><span class="c-dim" style="font-size:0.8em;">orchestration</span></div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--accent-gold);">Factory<br/><span class="c-dim" style="font-size:0.8em;">creates & configures engine</span></div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color); min-width: 280px;">
+								<strong>Agent Engine</strong><br/>
+								<span class="c-dim" style="font-size:0.8em;">PydanticAI + persistence + streaming</span>
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color);">Toolkit 1</div>
+							<div class="arch-box" style="border-color: var(--toolkit-color);">Toolkit 2</div>
+							<div class="arch-box" style="border-color: var(--toolkit-color);">...</div>
+							<div class="arch-box" style="border-color: var(--toolkit-color);">Toolkit 15</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--deps-color);">AWS Bedrock LLM<br/><span class="c-dim" style="font-size:0.8em;">single invocation with tools</span></div>
+						</div>
+					</div>
+					<aside class="notes">
+						Here's the full flow. HTTP request comes in, the service
+						layer orchestrates, the factory creates a configured engine
+						with the right toolkits, and the engine runs a single LLM
+						invocation with all tools attached. Clean, fast, extensible.
+					</aside>
+				</section>
+
+				<!-- Slide: Four pillars -->
+				<section>
+					<h2>The Four Pillars</h2>
+					<div class="pillars">
+						<div class="pillar" style="background: rgba(79,195,247,0.15); border: 1px solid var(--toolkit-color);">
+							<h4 class="c-toolkit">🧩 Toolkits</h4>
+							<p>Modular capability bundles with tools, instructions & deps</p>
+						</div>
+						<div class="pillar" style="background: rgba(255,183,77,0.15); border: 1px solid var(--gate-color);">
+							<h4 class="c-gate">🚪 Gates</h4>
+							<p>Runtime conditions that activate or deactivate toolkits</p>
+						</div>
+						<div class="pillar" style="background: rgba(129,199,132,0.15); border: 1px solid var(--deps-color);">
+							<h4 class="c-deps">📦 Props</h4>
+							<p>Lazy-loaded dependency injection for toolkit services</p>
+						</div>
+						<div class="pillar" style="background: rgba(206,147,216,0.15); border: 1px solid var(--threads-color);">
+							<h4 class="c-threads">💾 State</h4>
+							<p>Persistent conversation state in PostgreSQL</p>
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 25px;">
+						Let's dive into each one.
+					</p>
+					<aside class="notes">
+						The engine is built on four pillars. Toolkits for modularity,
+						gates for conditional activation, props for dependency
+						injection, and persistent state. Let's look at each.
+					</aside>
+				</section>
+
+				<!-- Section 3: Toolkits -->
+				<section class="section-title">
+					<h2>Toolkits</h2>
+					<h3>"The Armory"</h3>
+					<aside class="notes">
+						Think of toolkits as the weapons in a knight's armory.
+						Each one gives the agent a specific capability.
+					</aside>
+				</section>
+
+				<!-- Slide: What is a Toolkit -->
+				<section>
+					<h2>What is a <span class="c-toolkit">Toolkit</span>?</h2>
+					<p class="medium" style="margin-bottom: 20px;">A self-contained bundle of everything the agent needs for one capability</p>
+					<div class="pillars" style="grid-template-columns: repeat(4, 1fr);">
+						<div class="pillar" style="background: rgba(79,195,247,0.1); border: 1px solid var(--toolkit-color);">
+							<h4>🔧 Tools</h4>
+							<p>Actions the agent can call (API calls, queries, mutations)</p>
+						</div>
+						<div class="pillar" style="background: rgba(79,195,247,0.1); border: 1px solid var(--toolkit-color);">
+							<h4>📝 Instructions</h4>
+							<p>Dynamic prompts injected into the agent's context</p>
+						</div>
+						<div class="pillar" style="background: rgba(79,195,247,0.1); border: 1px solid var(--toolkit-color);">
+							<h4>📦 Dependencies</h4>
+							<p>Services & clients needed by the tools</p>
+						</div>
+						<div class="pillar" style="background: rgba(79,195,247,0.1); border: 1px solid var(--toolkit-color);">
+							<h4>🚪 Gate</h4>
+							<p>Condition that enables or disables the whole toolkit</p>
+						</div>
+					</div>
+					<aside class="notes">
+						A toolkit has 4 parts. Tools are the actual functions the
+						LLM can call. Instructions are dynamic prompts. Dependencies
+						are the services those tools need. And a gate decides if the
+						whole toolkit should be active for this specific run.
+					</aside>
+				</section>
+
+				<!-- Slide: Toolkit anatomy -->
+				<section>
+					<h2>Anatomy: <span class="c-toolkit">Service Catalog Toolkit</span></h2>
+					<div class="anatomy-block">
+						<span class="c-toolkit">SERVICE_CATALOG_TOOLKIT</span> = Toolkit(<br/>
+						&nbsp;&nbsp;name=<span class="c-deps">"service_catalog"</span>,<br/><br/>
+						&nbsp;&nbsp;<span class="c-dim"># 🔧 Tools the agent can call</span><br/>
+						&nbsp;&nbsp;tools=[<br/>
+						&nbsp;&nbsp;&nbsp;&nbsp;Tool(<span class="c-gold">evaluate_form_progress</span>, max_retries=3),<br/>
+						&nbsp;&nbsp;&nbsp;&nbsp;Tool(<span class="c-gold">create_ticket_from_catalog</span>, max_retries=4),<br/>
+						&nbsp;&nbsp;],<br/><br/>
+						&nbsp;&nbsp;<span class="c-dim"># 📦 Lazy-loaded dependencies</span><br/>
+						&nbsp;&nbsp;required_deps={<br/>
+						&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-deps">"service_catalog_service"</span>: lambda deps: ServiceCatalogService(...),<br/>
+						&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-deps">"tickets_service"</span>: lambda deps: TicketsService(...),<br/>
+						&nbsp;&nbsp;},<br/><br/>
+						&nbsp;&nbsp;<span class="c-dim"># 📝 Dynamic instructions</span><br/>
+						&nbsp;&nbsp;instructions=[<span class="c-gold">build_catalog_prompt</span>],<br/><br/>
+						&nbsp;&nbsp;<span class="c-dim"># 🚪 Only active if tenant has catalog items</span><br/>
+						&nbsp;&nbsp;gate=<span class="c-gate">has_catalog_items</span>,<br/>
+						)
+					</div>
+					<aside class="notes">
+						Here's a real example — the service catalog toolkit. It has
+						two tools for form evaluation and ticket creation, lazy deps
+						for the services it needs, a dynamic prompt builder, and a
+						gate that only activates it if the tenant has catalog items.
+					</aside>
+				</section>
+
+				<!-- Slide: Composability -->
+				<section>
+					<h2>Composable <span class="c-toolkit">Agents</span></h2>
+					<p class="medium" style="margin-bottom: 20px;">Different agents use different toolkit combos</p>
+					<div class="comparison" style="max-width: 900px; margin: 0 auto;">
+						<div class="card" style="border-left: 4px solid var(--toolkit-color);">
+							<h3 class="c-toolkit">Helpdesk Agent</h3>
+							<p class="medium" style="margin: 5px 0;"><strong>15 toolkits</strong></p>
+							<p class="small" style="color: #aaa;">
+								KB, Tickets, Service Catalog, Device Mgmt,
+								Device Recovery, IDP Status, Password Reset,
+								Account Unlock, MFA Reset, App Search, App Access,
+								Group Members, Employee Search, Termination, Target Employee
+							</p>
+						</div>
+						<div class="card" style="border-left: 4px solid var(--threads-color);">
+							<h3 class="c-threads">Workflow Builder</h3>
+							<p class="medium" style="margin: 5px 0;"><strong>4 toolkits</strong></p>
+							<p class="small" style="color: #aaa;">
+								Workflow Builder, Employee Search, Desks, Workflow Catalog
+							</p>
+							<p class="small" style="color: var(--threads-color); margin-top: 10px;">
+								+ Structured output (workflow definitions)
+							</p>
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 20px;">
+						Same engine, different configurations.
+					</p>
+					<aside class="notes">
+						The beauty of this design: same engine, different toolkit
+						combos. The helpdesk agent gets all 15 IT support toolkits.
+						The workflow builder gets just 4 specialized ones plus
+						structured output for generating workflow definitions.
+					</aside>
+				</section>
+
+				<!-- Section 4: Gates -->
+				<section class="section-title">
+					<h2>Gates</h2>
+					<h3>"Who Shall Pass?"</h3>
+					<aside class="notes">
+						Gates are the gatekeepers. They decide which toolkits
+						are active for any given run.
+					</aside>
+				</section>
+
+				<!-- Slide: What are gates -->
+				<section>
+					<h2>What are <span class="c-gate">Gates</span>?</h2>
+					<p class="medium" style="margin-bottom: 25px;">
+						Async functions that decide if a toolkit should be <span class="c-deps">active</span> or <span class="c-red">hidden</span>
+					</p>
+					<div class="comparison" style="max-width: 900px; margin: 0 auto;">
+						<div class="card">
+							<h3 class="c-deps">Gate returns True</h3>
+							<ul class="medium">
+								<li>Toolkit's tools are visible to the LLM</li>
+								<li>Toolkit's instructions are injected</li>
+								<li>Dependencies are available</li>
+							</ul>
+						</div>
+						<div class="card">
+							<h3 class="c-red">Gate returns False</h3>
+							<ul class="medium">
+								<li>Toolkit completely hidden</li>
+								<li>No instructions added</li>
+								<li>Dependencies never built (saves resources)</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						A gate is an async function that runs at the start of each
+						agent step. If it returns true, the toolkit is fully active.
+						If false, the toolkit is completely invisible — tools hidden,
+						instructions not injected, dependencies not even created.
+					</aside>
+				</section>
+
+				<!-- Slide: Gate examples -->
+				<section>
+					<h2><span class="c-gate">Gate</span> Examples</h2>
+					<div class="anatomy-block" style="margin-bottom: 20px;">
+						<span class="c-dim"># Only show service catalog if tenant has items</span><br/>
+						<span class="c-gate">has_catalog_items</span>(ctx):<br/>
+						&nbsp;&nbsp;categories = await service.list_categories()<br/>
+						&nbsp;&nbsp;return <span class="c-deps">any</span>(c.items for c in categories)
+					</div>
+					<div class="anatomy-block">
+						<span class="c-dim"># Only show password reset if user has Okta or Entra</span><br/>
+						<span class="c-gate">requires_supported_idp</span>({SupportedIdp.OKTA})(ctx):<br/>
+						&nbsp;&nbsp;for source in employee.sources:<br/>
+						&nbsp;&nbsp;&nbsp;&nbsp;if source.name in supported_idps:<br/>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return <span class="c-deps">True</span><br/>
+						&nbsp;&nbsp;return <span class="c-red">False</span>
+					</div>
+					<aside class="notes">
+						Two real examples. First: the catalog gate checks if the
+						tenant even has catalog items — no point showing catalog
+						tools if there's nothing to browse. Second: the IDP gate
+						checks if the user's identity provider supports the
+						operation — no Okta password reset if the user isn't on Okta.
+					</aside>
+				</section>
+
+				<!-- Slide: Tool-level gates -->
+				<section>
+					<h2>Tool-Level Gates: <span class="c-gate">prepare</span> Callbacks</h2>
+					<p class="medium" style="margin-bottom: 20px;">
+						Fine-grained control — hide individual tools within a toolkit
+					</p>
+					<div class="anatomy-block">
+						<span class="c-dim"># Hide "create ticket" if a ticket already exists</span><br/>
+						<span class="c-gate">hide_tool_if_ticket_exists</span>(ctx, tool_def):<br/>
+						&nbsp;&nbsp;if ctx.deps.state.<span class="c-red">ticket_id</span>:<br/>
+						&nbsp;&nbsp;&nbsp;&nbsp;return <span class="c-red">None</span>&nbsp;&nbsp;<span class="c-dim"># Tool hidden from LLM</span><br/>
+						&nbsp;&nbsp;return <span class="c-deps">tool_def</span>&nbsp;&nbsp;<span class="c-dim"># Tool visible</span>
+					</div>
+					<p class="fragment medium" style="margin-top: 25px;">
+						Prevents the agent from making mistakes<br/>
+						<span class="c-dim">(e.g., creating duplicate tickets)</span>
+					</p>
+					<aside class="notes">
+						Beyond toolkit-level gates, we have tool-level prepare
+						callbacks. This example hides the "create ticket" tool
+						once a ticket already exists in the conversation. The LLM
+						literally cannot see or call the tool. Prevents duplicates.
+					</aside>
+				</section>
+
+				<!-- Section 5: Props -->
+				<section class="section-title">
+					<h2>Props</h2>
+					<h3>"Everything You Need, When You Need It"</h3>
+					<aside class="notes">
+						Props — our dependency injection system. Like a squire's
+						pack: you only unpack what you need for the current fight.
+					</aside>
+				</section>
+
+				<!-- Slide: Lazy DI -->
+				<section>
+					<h2><span class="c-deps">Lazy</span> Dependency Injection</h2>
+					<p class="medium" style="margin-bottom: 20px;">
+						Dependencies are built <strong>on first access</strong>, not upfront
+					</p>
+					<div class="comparison" style="max-width: 900px; margin: 0 auto;">
+						<div class="card">
+							<h3 class="c-red">Eager (wasteful)</h3>
+							<p class="medium">Build all 15+ services at startup</p>
+							<p class="medium c-dim">Even if gates disable 10 of them</p>
+						</div>
+						<div class="card" style="border: 1px solid var(--deps-color);">
+							<h3 class="c-deps">Lazy (efficient)</h3>
+							<p class="medium">Build a service only when its tool is actually called</p>
+							<p class="medium c-dim">Gate disables toolkit? Deps never built</p>
+						</div>
+					</div>
+					<aside class="notes">
+						Why lazy? Because with 15 toolkits, building all
+						dependencies upfront is wasteful. If the IDP gate disables
+						password reset, why build the IDP client? Lazy deps mean
+						we only pay for what we use.
+					</aside>
+				</section>
+
+				<!-- Slide: How it works -->
+				<section>
+					<h2>How <span class="c-deps">Props</span> Work</h2>
+					<div class="arch-diagram" style="font-size: 0.6em;">
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								Toolkit 1<br/><span class="c-dim">deps: {svc_a, svc_b}</span>
+							</div>
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								Toolkit 2<br/><span class="c-dim">deps: {svc_c}</span>
+							</div>
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								Toolkit N<br/><span class="c-dim">deps: {svc_d, svc_e}</span>
+							</div>
+						</div>
+						<div class="arch-arrow">↓ <span style="font-size: 0.5em; color: #aaa;">collected by</span></div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--deps-color); min-width: 300px;">
+								<strong>DependencyRegistry</strong><br/>
+								<span class="c-dim">merges all deps from all toolkits</span>
+							</div>
+						</div>
+						<div class="arch-arrow">↓ <span style="font-size: 0.5em; color: #aaa;">creates</span></div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--deps-color); min-width: 300px;">
+								<strong>Dynamic AgentDeps Class</strong><br/>
+								<span class="c-dim">LazyDep descriptors as class attributes</span>
+							</div>
+						</div>
+						<div class="arch-arrow">↓ <span style="font-size: 0.5em; color: #aaa;">accessed via</span></div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--accent-gold);">
+								ctx.deps.svc_a<br/><span class="c-dim">built on first access</span>
+							</div>
+						</div>
+					</div>
+					<aside class="notes">
+						Here's the flow. Each toolkit declares what deps it needs.
+						The DependencyRegistry collects all of them and dynamically
+						creates an AgentDeps subclass with LazyDep descriptors.
+						When a tool accesses ctx.deps.some_service, it's built
+						on the fly and cached.
+					</aside>
+				</section>
+
+				<!-- Slide: Dependency hierarchy -->
+				<section>
+					<h2>Dependency <span class="c-deps">Hierarchy</span></h2>
+					<div class="arch-diagram" style="font-size: 0.6em;">
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: #666;">
+								<strong>AgentDeps</strong> <span class="c-dim">(base)</span><br/>
+								tenant_id, thread_id, state
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--threads-color);">
+								<strong>EmployeeContextDeps</strong><br/>
+								employee, actor, reporter
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color); min-width: 400px;">
+								<strong>HelpdeskDeps</strong><br/>
+								thread, tickets_service, desks_service, agent_config<br/>
+								<span class="c-deps">+ 15 dynamic deps from toolkits</span>
+							</div>
+						</div>
+					</div>
+					<aside class="notes">
+						The deps form a hierarchy. Base has tenant and thread IDs.
+						EmployeeContext adds employee resolution. HelpdeskDeps
+						adds thread access, desk config, and all the dynamic
+						dependencies from the 15 toolkits.
+					</aside>
+				</section>
+
+				<!-- Section 6: Impact -->
+				<section class="section-title">
+					<h2>Impact</h2>
+					<h3>What we achieved</h3>
+				</section>
+
+				<!-- Slide: Speed -->
+				<section>
+					<h2><span class="c-deps">Speed</span></h2>
+					<div style="display: flex; justify-content: center; gap: 60px; align-items: center; margin: 40px 0;">
+						<div style="text-align: center;">
+							<div style="font-size: 3.5em; color: var(--danger-red);">3+</div>
+							<p class="medium c-dim">LLM calls before</p>
+						</div>
+						<div style="font-size: 2em; color: var(--accent-gold);">→</div>
+						<div style="text-align: center;">
+							<div style="font-size: 3.5em; color: var(--deps-color);">1</div>
+							<p class="medium c-dim">LLM call now</p>
+						</div>
+					</div>
+					<p class="fragment medium">
+						Single invocation with tool-calling.<br/>
+						The model decides, acts, and responds — all at once.
+					</p>
+					<aside class="notes">
+						The headline number: from 3+ LLM calls per message down
+						to 1. The model itself figures out the intent, calls the
+						right tools, and crafts the response — all in a single turn.
+					</aside>
+				</section>
+
+				<!-- Slide: Problem solver -->
+				<section>
+					<h2>From Tickets to <span class="c-deps">Solutions</span></h2>
+					<div class="icon-grid" style="max-width: 900px; margin: 20px auto; grid-template-columns: repeat(3, 1fr);">
+						<div class="item" style="border-color: var(--deps-color);">
+							<span class="emoji">🔑</span>
+							<strong>Password Resets</strong><br/>
+							Directly via Okta/Entra
+						</div>
+						<div class="item" style="border-color: var(--deps-color);">
+							<span class="emoji">🚪</span>
+							<strong>App Access</strong><br/>
+							Grant access instantly
+						</div>
+						<div class="item" style="border-color: var(--deps-color);">
+							<span class="emoji">📚</span>
+							<strong>KB Search</strong><br/>
+							Find answers in knowledge base
+						</div>
+						<div class="item" style="border-color: var(--deps-color);">
+							<span class="emoji">📱</span>
+							<strong>MFA Reset</strong><br/>
+							Reset multi-factor auth
+						</div>
+						<div class="item" style="border-color: var(--deps-color);">
+							<span class="emoji">💻</span>
+							<strong>Device Recovery</strong><br/>
+							Remote device actions
+						</div>
+						<div class="item" style="border-color: var(--deps-color);">
+							<span class="emoji">🔓</span>
+							<strong>Account Unlock</strong><br/>
+							Unlock locked accounts
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 15px;">
+						Users get <span class="c-deps">real help</span>, not just a ticket number.
+					</p>
+					<aside class="notes">
+						The agent now actually solves problems. Need a password
+						reset? Done. App access? Granted. These used to be
+						"create a ticket and wait" — now they're instant.
+					</aside>
+				</section>
+
+				<!-- Slide: Developer experience -->
+				<section>
+					<h2>Developer <span class="c-gold">Experience</span></h2>
+					<div style="max-width: 700px; margin: 30px auto; text-align: left;">
+						<div class="card" style="margin-bottom: 20px;">
+							<h3 class="c-deps">Adding a new capability</h3>
+							<p class="medium" style="margin: 10px 0 0;">
+								Create a new Toolkit → plug it into the factory → done.
+							</p>
+							<p class="medium c-dim">No changes to the engine. No changes to other toolkits.</p>
+						</div>
+						<div class="card">
+							<h3 class="c-deps">Creating a new agent type</h3>
+							<p class="medium" style="margin: 10px 0 0;">
+								Pick your toolkits → create a factory → you have an agent.
+							</p>
+							<p class="medium c-dim">Same engine, same patterns, different capabilities.</p>
+						</div>
+					</div>
+					<aside class="notes">
+						For developers, the DX is great. Want to add a new
+						capability? Write a toolkit and plug it in. Want a whole
+						new agent type? Pick your toolkit combo and create a factory.
+						The engine handles everything else.
+					</aside>
+				</section>
+
+				<!-- Slide: Observability -->
+				<section>
+					<h2>Built-in <span class="c-gold">Observability</span></h2>
+					<div class="icon-grid" style="max-width: 800px; margin: 30px auto;">
+						<div class="item">
+							<span class="emoji">🔭</span>
+							<strong>OpenTelemetry</strong><br/>
+							Every tool call traced end-to-end
+						</div>
+						<div class="item">
+							<span class="emoji">📊</span>
+							<strong>Structured Logging</strong><br/>
+							tenant_id, thread_id, tool calls — all logged
+						</div>
+						<div class="item">
+							<span class="emoji">💾</span>
+							<strong>State Persistence</strong><br/>
+							Full conversation history for debugging
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 20px;">
+						When something goes wrong, we can trace exactly what happened.
+					</p>
+					<aside class="notes">
+						Observability is baked in. Every agent run is traced with
+						OTEL, every tool call is logged with structured context,
+						and the full conversation state is persisted in Postgres
+						for replay and debugging.
+					</aside>
+				</section>
+
+				<!-- ============================================ -->
+				<!-- PART II: THE COMMUNICATION LAYER            -->
+				<!-- ============================================ -->
+
+				<!-- Section 7: The Problem -->
+				<section class="section-title">
+					<h2>Part II: The Communication Layer</h2>
+					<h3>"Messages Lost in the Wind"</h3>
+					<aside class="notes">
+						Now for Part II. If the Agent Engine is the brain,
+						the Communication Layer is the nervous system. Let's
+						look at the mess we had before.
+					</aside>
+				</section>
+
+				<!-- Slide: Messages everywhere -->
+				<section>
+					<h2>Messages <span class="c-red">Everywhere</span></h2>
+					<div class="icon-grid" style="max-width: 900px; margin: 30px auto; grid-template-columns: repeat(4, 1fr);">
+						<div class="item" style="border-color: var(--danger-red);">
+							<span class="emoji">💬</span>
+							<strong>Slack</strong><br/>
+							Messages in channels & DMs
+						</div>
+						<div class="item" style="border-color: var(--danger-red);">
+							<span class="emoji">👥</span>
+							<strong>Teams</strong><br/>
+							Messages in chats
+						</div>
+						<div class="item" style="border-color: var(--danger-red);">
+							<span class="emoji">🎫</span>
+							<strong>Tickets</strong><br/>
+							Comments & internal notes
+						</div>
+						<div class="item" style="border-color: var(--danger-red);">
+							<span class="emoji">🌐</span>
+							<strong>Portal</strong><br/>
+							User-facing messages
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 25px;">
+						4 systems. 4 different message stores. <span class="c-red">Zero unification.</span>
+					</p>
+					<aside class="notes">
+						Messages lived in 4 different places. Slack had its copy,
+						Teams had its copy, the ticket system had its copy, and
+						the portal had... well, it barely had anything. Four
+						separate silos with no connection between them.
+					</aside>
+				</section>
+
+				<!-- Slide: Missing history -->
+				<section>
+					<h2><span class="c-red">Missing</span> History</h2>
+					<div style="max-width: 800px; margin: 30px auto;">
+						<div class="flow" style="margin-bottom: 25px;">
+							<div class="step">User asks in Slack</div>
+							<div class="arrow">→</div>
+							<div class="step">Agent responds</div>
+							<div class="arrow">→</div>
+							<div class="step" style="border-color: var(--accent-gold);">Ticket created</div>
+							<div class="arrow">→</div>
+							<div class="step" style="border-color: var(--danger-red);">Previous messages?<br/><span class="c-red">Gone.</span></div>
+						</div>
+						<div class="card" style="text-align: left;">
+							<p class="medium">When a ticket was created from a Slack conversation:</p>
+							<ul class="medium">
+								<li><span class="c-red">Slack messages</span> never made it to the ticket</li>
+								<li>The IT agent had <span class="c-red">no context</span> of what was discussed</li>
+								<li>The user had to <span class="c-red">repeat everything</span></li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						The worst part: when a conversation in Slack led to a
+						ticket, the Slack messages didn't follow. The IT agent
+						picking up the ticket had zero context. The user had to
+						explain everything again. Terrible experience.
+					</aside>
+				</section>
+
+				<!-- Slide: Hard to track -->
+				<section>
+					<h2>Hard to <span class="c-red">Track</span></h2>
+					<div class="comparison" style="max-width: 900px; margin: 20px auto;">
+						<div class="card">
+							<h3>The user's view</h3>
+							<p class="medium">Sent a message in Slack.</p>
+							<p class="medium">Got a response... somewhere?</p>
+							<p class="medium">A ticket appeared... maybe?</p>
+							<p class="medium c-red" style="margin-top: 10px;">
+								"Where is my conversation?"
+							</p>
+						</div>
+						<div class="card">
+							<h3>The agent's view</h3>
+							<p class="medium">Got a ticket with no history.</p>
+							<p class="medium">User says "as I mentioned..."</p>
+							<p class="medium">Mentioned where? When?</p>
+							<p class="medium c-red" style="margin-top: 10px;">
+								"What conversation?"
+							</p>
+						</div>
+					</div>
+					<aside class="notes">
+						Both sides suffered. Users couldn't track where their
+						conversation was happening. Agents got tickets with
+						missing context. "As I mentioned" — mentioned WHERE?
+						Both were frustrated.
+					</aside>
+				</section>
+
+				<!-- Slide: No source of truth -->
+				<section>
+					<h2>No Single <span class="c-red">Source of Truth</span></h2>
+					<div style="max-width: 700px; margin: 40px auto; text-align: center;">
+						<p style="font-size: 1.3em; color: #aaa;">Which system has the real conversation?</p>
+						<div style="display: flex; justify-content: center; gap: 20px; margin: 30px 0;">
+							<div class="card" style="flex: 1; border-color: var(--danger-red);">
+								<p class="medium">Slack?</p>
+							</div>
+							<div class="card" style="flex: 1; border-color: var(--danger-red);">
+								<p class="medium">Teams?</p>
+							</div>
+							<div class="card" style="flex: 1; border-color: var(--danger-red);">
+								<p class="medium">Tickets?</p>
+							</div>
+							<div class="card" style="flex: 1; border-color: var(--danger-red);">
+								<p class="medium">Portal?</p>
+							</div>
+						</div>
+						<p class="fragment" style="font-size: 1.5em; color: var(--danger-red); margin-top: 20px;">
+							None of them. All of them. It depends.
+						</p>
+					</div>
+					<aside class="notes">
+						The fundamental problem: there was no single source of
+						truth. Depending on who you asked and when, the "real"
+						conversation could be in any of these systems. This had
+						to change.
+					</aside>
+				</section>
+
+				<!-- Section 8: Threads API -->
+				<section class="section-title">
+					<h2>Threads API</h2>
+					<h3>"One Thread to Bind Them"</h3>
+					<aside class="notes">
+						Enter the Threads API — our single source of truth
+						for all conversations, regardless of where they started.
+					</aside>
+				</section>
+
+				<!-- Slide: What is Threads API -->
+				<section>
+					<h2>The <span class="c-threads">Threads API</span></h2>
+					<p class="medium" style="margin-bottom: 20px;">
+						Central microservice — the <strong>single source of truth</strong> for all conversations
+					</p>
+					<div class="icon-grid" style="max-width: 900px; margin: 0 auto;">
+						<div class="item" style="border-color: var(--threads-color);">
+							<span class="emoji">🔗</span>
+							<strong>Any Source</strong><br/>
+							Slack, Teams, Portal, Service Desk, Email
+						</div>
+						<div class="item" style="border-color: var(--threads-color);">
+							<span class="emoji">📝</span>
+							<strong>Every Message</strong><br/>
+							Employee, agent, and system messages
+						</div>
+						<div class="item" style="border-color: var(--threads-color);">
+							<span class="emoji">🗄️</span>
+							<strong>One Database</strong><br/>
+							PostgreSQL with UUID7 time-ordered IDs
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 25px;">
+						Doesn't matter where the conversation started — <span class="c-threads">Threads has it all.</span>
+					</p>
+					<aside class="notes">
+						The Threads API is a central microservice that stores
+						every conversation from every source. Slack, Teams,
+						Portal, Service Desk — all messages flow through here.
+						One database, one truth.
+					</aside>
+				</section>
+
+				<!-- Slide: Thread model -->
+				<section>
+					<h2>Thread <span class="c-threads">Model</span></h2>
+					<div class="comparison" style="max-width: 900px; margin: 20px auto;">
+						<div class="card">
+							<h3 class="c-threads">Thread</h3>
+							<div class="anatomy-block" style="font-size: 0.9em;">
+								id: <span class="c-gold">UUID7</span> <span class="c-dim">(time-ordered)</span><br/>
+								tenant_id: UUID<br/>
+								source: <span class="c-threads">slack | teams | portal | service-desk</span><br/>
+								external_id: <span class="c-dim">"workspace:channel:thread_ts"</span><br/>
+								employee_id: UUID<br/>
+								assigned_agent: <span class="c-toolkit">helpdesk | workflow-builder</span><br/>
+								title: string<br/>
+								last_message_at: timestamp
+							</div>
+						</div>
+						<div class="card">
+							<h3 class="c-threads">Thread Message</h3>
+							<div class="anatomy-block" style="font-size: 0.9em;">
+								id: <span class="c-gold">UUID7</span> <span class="c-dim">(time-ordered)</span><br/>
+								thread_id: UUID<br/>
+								role: <span class="c-deps">employee | system | agent</span><br/>
+								user_source: <span class="c-dim">slack | teams | portal</span><br/>
+								system_source: <span class="c-dim">workflows | agent | svc-desk</span><br/>
+								content: text<br/>
+								message_metadata: <span class="c-gold">JSONB</span><br/>
+								is_internal: boolean
+							</div>
+						</div>
+					</div>
+					<aside class="notes">
+						Two core models. A Thread tracks the conversation — where
+						it came from, who owns it, which agent handles it. A
+						ThreadMessage tracks each message — who sent it, from
+						where, with rich metadata in a JSONB field.
+					</aside>
+				</section>
+
+				<!-- Slide: Internal vs External API -->
+				<section>
+					<h2><span class="c-deps">External</span> vs <span class="c-threads">Internal</span> API</h2>
+					<div class="comparison" style="max-width: 900px; margin: 20px auto;">
+						<div class="card" style="border-left: 4px solid var(--deps-color);">
+							<h3 class="c-deps">External API</h3>
+							<p class="small" style="color: #aaa;">/api/v1/threads</p>
+							<ul class="medium">
+								<li>Employee authentication required</li>
+								<li>Scoped to the authenticated user</li>
+								<li>Internal messages hidden</li>
+								<li>Used by Portal frontend</li>
+							</ul>
+						</div>
+						<div class="card" style="border-left: 4px solid var(--threads-color);">
+							<h3 class="c-threads">Internal API</h3>
+							<p class="small" style="color: #aaa;">/api/v1/internal</p>
+							<ul class="medium">
+								<li>Service-to-service, no employee auth</li>
+								<li>Full access — all threads, all messages</li>
+								<li>Can include internal messages</li>
+								<li>Used by agents, service desk, processors</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						We have two API surfaces. External is for the portal —
+						employee-scoped, authenticated, internal messages hidden.
+						Internal is for our backend services — full access, no
+						employee filter, can see internal messages and notes.
+					</aside>
+				</section>
+
+				<!-- Slide: UUID7 -->
+				<section>
+					<h2><span class="c-gold">UUID7</span> — Time-Ordered IDs</h2>
+					<div style="max-width: 700px; margin: 30px auto;">
+						<div class="anatomy-block" style="text-align: center; font-size: 0.6em;">
+							<span class="c-dim">018f6b2c</span>-<span class="c-gold">a1b2</span>-<span class="c-dim">7def-8abc-1234567890ab</span><br/><br/>
+							<span class="c-gold">^^^^^^^^</span><br/>
+							<span class="c-gold">Timestamp encoded in the ID itself</span>
+						</div>
+						<div style="margin-top: 25px;">
+							<ul class="medium">
+								<li>Natural chronological ordering — no extra timestamp column needed</li>
+								<li>Efficient database range queries</li>
+								<li>Pagination without complex ORDER BY</li>
+								<li>Globally unique + time-sortable</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						A nice detail: we use UUID7 for all IDs. The timestamp
+						is encoded right in the UUID, so messages are naturally
+						sorted chronologically. No need for a separate timestamp
+						column for ordering. Efficient queries, clean pagination.
+					</aside>
+				</section>
+
+				<!-- Section 9: SNS Fan-Out -->
+				<section class="section-title">
+					<h2>SNS Fan-Out</h2>
+					<h3>"The Ravens"</h3>
+					<aside class="notes">
+						When a message arrives at Threads, it needs to be
+						distributed — like ravens carrying news across the realm.
+						That's where SNS comes in.
+					</aside>
+				</section>
+
+				<!-- Slide: Pub/Sub architecture -->
+				<section>
+					<h2>Pub/Sub <span class="c-threads">Architecture</span></h2>
+					<div class="arch-diagram">
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--threads-color); min-width: 250px;">
+								<strong>Threads API</strong><br/>
+								<span class="c-dim">message created</span>
+							</div>
+						</div>
+						<div class="arch-arrow">↓ <span style="font-size: 0.5em; color: #aaa;">publishes</span></div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--accent-gold); min-width: 300px;">
+								<strong>SNS FIFO Topic</strong><br/>
+								<span class="c-dim">ordered, deduplicated</span>
+							</div>
+						</div>
+						<div class="arch-arrow">↓ <span style="font-size: 0.5em; color: #aaa;">fans out to</span></div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								<strong>SQS</strong><br/>Agents
+							</div>
+							<div class="arch-box" style="border-color: var(--deps-color);">
+								<strong>SQS</strong><br/>Service Desk
+							</div>
+							<div class="arch-box" style="border-color: #e1bee7;">
+								<strong>SQS</strong><br/>Slack
+							</div>
+							<div class="arch-box" style="border-color: #90caf9;">
+								<strong>SQS</strong><br/>Teams
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								Agent<br/>Processor
+							</div>
+							<div class="arch-box" style="border-color: var(--deps-color);">
+								SD Threads<br/>Processor
+							</div>
+							<div class="arch-box" style="border-color: #e1bee7;">
+								Slack<br/>Processor
+							</div>
+							<div class="arch-box" style="border-color: #90caf9;">
+								Teams<br/>Processor
+							</div>
+						</div>
+					</div>
+					<aside class="notes">
+						Here's the event flow. When a message is created in Threads,
+						it's published to an SNS FIFO topic. SNS fans it out to
+						4 SQS queues — one for each subscriber. Each processor
+						handles its own concern independently.
+					</aside>
+				</section>
+
+				<!-- Slide: Message attributes -->
+				<section>
+					<h2>Smart <span class="c-gate">Filtering</span></h2>
+					<p class="medium" style="margin-bottom: 15px;">
+						SNS message attributes enable subscription-level filtering
+					</p>
+					<div class="anatomy-block" style="max-width: 700px; margin: 0 auto;">
+						<span class="c-dim">// Message attributes published with every message</span><br/>
+						{<br/>
+						&nbsp;&nbsp;<span class="c-gate">"role"</span>: <span class="c-deps">"employee | system | agent"</span>,<br/>
+						&nbsp;&nbsp;<span class="c-gate">"tenant_id"</span>: <span class="c-deps">"uuid"</span>,<br/>
+						&nbsp;&nbsp;<span class="c-gate">"thread_source"</span>: <span class="c-deps">"slack | teams | portal"</span>,<br/>
+						&nbsp;&nbsp;<span class="c-gate">"is_internal"</span>: <span class="c-deps">"true | false"</span>,<br/>
+						&nbsp;&nbsp;<span class="c-gate">"user_source"</span>: <span class="c-deps">"slack | teams | portal"</span>,<br/>
+						&nbsp;&nbsp;<span class="c-gate">"system_source"</span>: <span class="c-deps">"agent | service-desk"</span>,<br/>
+						&nbsp;&nbsp;<span class="c-gate">"assigned_agent"</span>: <span class="c-deps">"helpdesk-agent | workflow-builder"</span><br/>
+						}
+					</div>
+					<p class="fragment medium" style="margin-top: 20px;">
+						Each subscriber only gets messages it cares about.<br/>
+						<span class="c-dim">e.g., Service Desk processor filters out messages from itself — prevents loops.</span>
+					</p>
+					<aside class="notes">
+						Each message carries attributes. Subscribers use these
+						for filtering at the SNS level. The service desk processor
+						filters out messages that originated from itself — preventing
+						infinite loops. Slack processor only gets Slack-source threads.
+					</aside>
+				</section>
+
+				<!-- Slide: Why FIFO -->
+				<section>
+					<h2>Why <span class="c-gold">FIFO</span>?</h2>
+					<div class="comparison" style="max-width: 900px; margin: 30px auto;">
+						<div class="card" style="border-left: 4px solid var(--accent-gold);">
+							<h3 class="c-gold">Ordering</h3>
+							<p class="medium">Messages within a thread are always processed in order.</p>
+							<p class="medium c-dim">Grouped by thread_id — no cross-thread blocking.</p>
+						</div>
+						<div class="card" style="border-left: 4px solid var(--accent-gold);">
+							<h3 class="c-gold">Deduplication</h3>
+							<p class="medium">Each message processed exactly once.</p>
+							<p class="medium c-dim">Message ID used as deduplication key.</p>
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 20px;">
+						Conversations make no sense out of order.
+					</p>
+					<aside class="notes">
+						We use FIFO for two reasons. First: ordering. Messages
+						in a conversation must be processed in sequence. FIFO
+						guarantees this within a message group (thread_id).
+						Second: deduplication. No double-processing.
+					</aside>
+				</section>
+
+				<!-- Section 10: Subscribers -->
+				<section class="section-title">
+					<h2>The Subscribers</h2>
+					<h3>"Every Message Finds Its Home"</h3>
+					<aside class="notes">
+						Let's look at each subscriber and what it does when
+						a message arrives.
+					</aside>
+				</section>
+
+				<!-- Slide: Four subscribers overview -->
+				<section>
+					<h2>Four <span class="c-threads">Processors</span></h2>
+					<div class="pillars">
+						<div class="pillar" style="background: rgba(79,195,247,0.15); border: 1px solid var(--toolkit-color);">
+							<h4 class="c-toolkit">🤖 Agents</h4>
+							<p>Routes messages to helpdesk or workflow builder agent. Streams responses back.</p>
+						</div>
+						<div class="pillar" style="background: rgba(129,199,132,0.15); border: 1px solid var(--deps-color);">
+							<h4 class="c-deps">🎫 Service Desk</h4>
+							<p>Syncs external messages to tickets. Keeps ticket history complete.</p>
+						</div>
+						<div class="pillar" style="background: rgba(225,190,231,0.15); border: 1px solid #e1bee7;">
+							<h4 style="color: #e1bee7;">💬 Slack</h4>
+							<p>Forwards agent responses to Slack. Manages emoji reactions.</p>
+						</div>
+						<div class="pillar" style="background: rgba(144,202,249,0.15); border: 1px solid #90caf9;">
+							<h4 style="color: #90caf9;">👥 Teams</h4>
+							<p>Forwards agent responses to Microsoft Teams channels.</p>
+						</div>
+					</div>
+					<aside class="notes">
+						Four independent processors. Agents handles AI responses.
+						Service Desk syncs to tickets. Slack forwards to channels
+						and manages reactions. Teams forwards to MS Teams.
+						Each runs independently, scales independently.
+					</aside>
+				</section>
+
+				<!-- Slide: Agents processor -->
+				<section>
+					<h2><span class="c-toolkit">Agents</span> Processor</h2>
+					<div class="flow" style="margin: 20px 0;">
+						<div class="step">SQS Message</div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--toolkit-color);">Route by<br/>assigned_agent</div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--toolkit-color);">Agent Engine<br/><span class="c-dim">processes</span></div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--deps-color);">Stream response<br/>→ Threads API</div>
+					</div>
+					<div style="max-width: 800px; margin: 20px auto; text-align: left;">
+						<div class="card">
+							<ul class="medium">
+								<li>Routes to <span class="c-toolkit">helpdesk agent</span> or <span class="c-threads">workflow builder</span></li>
+								<li>Streams responses back to Threads API with metadata</li>
+								<li>120s timeout — sends error message on failure</li>
+								<li>Skips file-only and internal employee messages</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						The agents processor receives a message, checks which
+						agent is assigned to the thread, routes accordingly.
+						The agent processes, and responses stream back to Threads
+						API. If it takes more than 2 minutes, it sends an error.
+					</aside>
+				</section>
+
+				<!-- Slide: Service Desk processor -->
+				<section>
+					<h2><span class="c-deps">Service Desk</span> Processor</h2>
+					<div class="flow" style="margin: 20px 0;">
+						<div class="step">SQS Message<br/><span class="c-dim">from non-SD source</span></div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--deps-color);">Look up ticket<br/>by thread_id</div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: var(--deps-color);">Publish<br/>TicketMessageAdded</div>
+						<div class="arrow">→</div>
+						<div class="step">Ticket updated</div>
+					</div>
+					<div style="max-width: 800px; margin: 20px auto; text-align: left;">
+						<div class="card">
+							<h3 class="c-deps" style="margin-top: 0;">Key detail: loop prevention</h3>
+							<p class="medium">
+								SNS filter: <code style="color: var(--gate-color);">user_source != "service-desk" AND system_source != "service-desk"</code>
+							</p>
+							<p class="medium c-dim">
+								Messages originating from the service desk are excluded — prevents infinite loops.
+							</p>
+						</div>
+					</div>
+					<aside class="notes">
+						The service desk processor picks up messages from external
+						sources — Slack, Teams, Portal, agents — and syncs them
+						to the corresponding ticket. The critical filter: it
+						excludes messages from itself. Without this, you'd get
+						an infinite loop of SD → Threads → SD → Threads...
+					</aside>
+				</section>
+
+				<!-- Slide: Slack processor -->
+				<section>
+					<h2><span style="color: #e1bee7;">Slack</span> Processor</h2>
+					<div class="flow" style="margin: 20px 0;">
+						<div class="step">SQS Message<br/><span class="c-dim">slack-source thread</span></div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: #e1bee7;">Parse external_id<br/><span class="c-dim">workspace:channel:ts</span></div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: #e1bee7;">Format content</div>
+						<div class="arrow">→</div>
+						<div class="step" style="border-color: #e1bee7;">Send to Slack</div>
+					</div>
+					<div style="max-width: 800px; margin: 20px auto; text-align: left;">
+						<div class="card">
+							<ul class="medium">
+								<li>Forwards agent and system messages to Slack channels</li>
+								<li>Formats ticket links, KB sources, catalog forms for Slack</li>
+								<li>Impersonates employee sender (name & avatar)</li>
+								<li>Manages <span class="c-gold">emoji reactions</span> for status updates</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						The Slack processor takes agent responses and forwards
+						them to the right Slack thread. It parses the external ID
+						to find the workspace, channel, and thread timestamp.
+						Formats content for Slack's markdown. And manages emojis
+						for status updates.
+					</aside>
+				</section>
+
+				<!-- Section 11: Full Picture -->
+				<section class="section-title">
+					<h2>The Full Picture</h2>
+					<h3>End-to-end flows</h3>
+					<aside class="notes">
+						Let's trace two complete flows to see how everything
+						connects.
+					</aside>
+				</section>
+
+				<!-- Slide: E2E Portal flow -->
+				<section>
+					<h2>Flow: <span class="c-deps">Portal</span></h2>
+					<div class="arch-diagram" style="font-size: 0.55em;">
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--deps-color);">
+								1. User sends message<br/>in Portal
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--threads-color);">
+								2. Threads API<br/>stores + publishes to SNS
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								3. Agent Processor<br/>receives + runs agent
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--threads-color);">
+								4. Agent response<br/>→ Threads API
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--deps-color);">
+								5. Portal polls<br/>user sees answer
+							</div>
+							<div class="arch-box" style="border-color: var(--deps-color);">
+								5. SD Processor<br/>syncs to ticket
+							</div>
+						</div>
+					</div>
+					<aside class="notes">
+						Portal flow: User sends a message. Threads API stores it
+						and publishes to SNS. The agent processor picks it up,
+						runs the agent engine, streams the response back to Threads.
+						The portal picks up the response. Meanwhile, the service
+						desk processor syncs everything to the ticket.
+					</aside>
+				</section>
+
+				<!-- Slide: E2E Slack flow -->
+				<section>
+					<h2>Flow: <span style="color: #e1bee7;">Slack</span></h2>
+					<div class="arch-diagram" style="font-size: 0.55em;">
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: #e1bee7;">
+								1. User sends message<br/>in Slack
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--threads-color);">
+								2. Threads API<br/>stores + publishes to SNS
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--toolkit-color);">
+								3. Agent Processor<br/>receives + runs agent
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: var(--threads-color);">
+								4. Agent response<br/>→ Threads API → SNS
+							</div>
+						</div>
+						<div class="arch-arrow">↓</div>
+						<div class="arch-row">
+							<div class="arch-box" style="border-color: #e1bee7;">
+								5. Slack Processor<br/>forwards to Slack + 🎫
+							</div>
+							<div class="arch-box" style="border-color: var(--deps-color);">
+								5. SD Processor<br/>syncs to ticket
+							</div>
+							<div class="arch-box" style="border-color: var(--deps-color);">
+								5. Portal<br/>also updated
+							</div>
+						</div>
+					</div>
+					<aside class="notes">
+						Slack flow: similar, but the agent's response goes through
+						SNS again. The Slack processor picks it up and forwards
+						it to the Slack channel with emoji reactions. Meanwhile,
+						the service desk processor syncs to the ticket, and the
+						Portal can also show the conversation. All systems in sync.
+					</aside>
+				</section>
+
+				<!-- Slide: Two-way sync -->
+				<section>
+					<h2>Two-Way <span class="c-threads">Sync</span></h2>
+					<div style="max-width: 800px; margin: 30px auto;">
+						<div style="display: flex; align-items: center; justify-content: center; gap: 30px;">
+							<div class="card" style="flex: 1; text-align: center; border-color: var(--threads-color);">
+								<h3 class="c-threads">Threads</h3>
+								<p class="medium">Slack/Teams/Portal<br/>messages</p>
+							</div>
+							<div style="text-align: center;">
+								<div style="font-size: 1.5em; color: var(--accent-gold);">←→</div>
+								<p class="small">synced via<br/>processors</p>
+							</div>
+							<div class="card" style="flex: 1; text-align: center; border-color: var(--deps-color);">
+								<h3 class="c-deps">Service Desk</h3>
+								<p class="medium">Ticket comments<br/>& internal notes</p>
+							</div>
+						</div>
+						<div class="fragment" style="margin-top: 25px;">
+							<ul class="medium">
+								<li>Ticket comments appear in the thread</li>
+								<li>Thread messages appear in the ticket</li>
+								<li>Internal notes stay internal (is_internal flag)</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						Two-way sync is the killer feature. The service desk
+						pushes ticket updates to threads. The threads processor
+						pushes external messages to tickets. Internal notes use
+						the is_internal flag so they're only visible to agents,
+						not employees.
+					</aside>
+				</section>
+
+				<!-- Slide: Workflow Builder -->
+				<section>
+					<h2><span class="c-threads">Workflow Builder</span> Integration</h2>
+					<div class="comparison" style="max-width: 900px; margin: 20px auto;">
+						<div class="card" style="border-left: 4px solid var(--toolkit-color);">
+							<h3 class="c-toolkit">Helpdesk Agent</h3>
+							<p class="medium">Same threads infra</p>
+							<p class="medium">Text responses</p>
+							<p class="medium c-dim">Metadata: ticket info, KB sources</p>
+						</div>
+						<div class="card" style="border-left: 4px solid var(--threads-color);">
+							<h3 class="c-threads">Workflow Builder</h3>
+							<p class="medium">Same threads infra</p>
+							<p class="medium"><strong>Structured output</strong></p>
+							<p class="medium c-dim">Metadata: workflow definitions, triggers</p>
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 20px;">
+						Same communication layer, different agent, different output format.<br/>
+						<span class="c-gold">The architecture just works.</span>
+					</p>
+					<aside class="notes">
+						The workflow builder uses the exact same threads infra.
+						The difference: it outputs structured workflow definitions
+						in the message metadata instead of plain text. The frontend
+						reads the metadata and renders the workflow canvas. Same
+						pipes, different content.
+					</aside>
+				</section>
+
+				<!-- Section 12: Details -->
+				<section class="section-title">
+					<h2>The Details</h2>
+					<h3>Emojis, filtering, and metadata</h3>
+				</section>
+
+				<!-- Slide: Emojis -->
+				<section>
+					<h2>Emoji <span class="c-gold">Reactions</span></h2>
+					<p class="medium" style="margin-bottom: 10px;">
+						Slack reactions as real-time status indicators
+					</p>
+					<div class="emoji-row">
+						<div class="emoji-item">
+							<span class="big">👀</span>
+							<strong>Processing</strong><br/>
+							<span class="c-dim">Added when agent starts</span>
+						</div>
+						<div class="emoji-item">
+							<span class="big">🎫</span>
+							<strong>Ticket Created</strong><br/>
+							<span class="c-dim">Replaces 👀</span>
+						</div>
+						<div class="emoji-item">
+							<span class="big">✅</span>
+							<strong>Resolved</strong><br/>
+							<span class="c-dim">Replaces 🎫</span>
+						</div>
+						<div class="emoji-item">
+							<span class="big">⚠️</span>
+							<strong>Error</strong><br/>
+							<span class="c-dim">Agent failed</span>
+						</div>
+					</div>
+					<div class="fragment" style="margin-top: 25px;">
+						<div class="flow">
+							<div class="step">👀 Processing</div>
+							<div class="arrow">→</div>
+							<div class="step">🎫 Ticket Created</div>
+							<div class="arrow">→</div>
+							<div class="step">✅ Resolved</div>
+						</div>
+						<p class="small" style="margin-top: 10px;">Lifecycle progression — users see status without leaving Slack</p>
+					</div>
+					<aside class="notes">
+						The emoji system gives users real-time status updates
+						right in Slack. Eyes when processing starts. Ticket emoji
+						when a ticket is created (eyes removed). Check mark when
+						resolved (ticket emoji removed). Warning if something
+						fails. Users don't need to leave Slack to know the status.
+					</aside>
+				</section>
+
+				<!-- Slide: Filtering -->
+				<section>
+					<h2><span class="c-gate">Filtering</span></h2>
+					<div class="comparison" style="max-width: 900px; margin: 20px auto;">
+						<div class="card">
+							<h3 class="c-gate">Thread Filtering</h3>
+							<ul class="medium">
+								<li>By source: show only Portal, Slack, etc.</li>
+								<li>By employee: scoped to authenticated user</li>
+								<li>Soft-deleted threads excluded by default</li>
+								<li>Sorted by last activity</li>
+							</ul>
+						</div>
+						<div class="card">
+							<h3 class="c-gate">Message Filtering</h3>
+							<ul class="medium">
+								<li>Internal messages hidden from employees</li>
+								<li>Visible to agents via internal API</li>
+								<li>Pagination with limit/offset</li>
+								<li>Optional attachment inclusion</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						Filtering works at both levels. Thread listing can filter
+						by source — show me only my Slack conversations, or only
+						Portal threads. Messages filter out internal notes from
+						employees but show them to agents. Clean separation.
+					</aside>
+				</section>
+
+				<!-- Slide: Metadata -->
+				<section>
+					<h2>Extensible <span class="c-gold">Metadata</span></h2>
+					<p class="medium" style="margin-bottom: 15px;">
+						JSONB field — add new data without schema migrations
+					</p>
+					<div class="icon-grid" style="max-width: 900px; margin: 0 auto;">
+						<div class="item" style="border-color: var(--accent-gold);">
+							<span class="emoji">🎫</span>
+							<strong>Ticket Context</strong><br/>
+							ticket_id, status, desk info
+						</div>
+						<div class="item" style="border-color: var(--accent-gold);">
+							<span class="emoji">📋</span>
+							<strong>Catalog Forms</strong><br/>
+							form fields, item details
+						</div>
+						<div class="item" style="border-color: var(--accent-gold);">
+							<span class="emoji">📚</span>
+							<strong>KB Sources</strong><br/>
+							article references, citations
+						</div>
+						<div class="item" style="border-color: var(--accent-gold);">
+							<span class="emoji">🔄</span>
+							<strong>Workflow Defs</strong><br/>
+							generated workflows & triggers
+						</div>
+						<div class="item" style="border-color: var(--accent-gold);">
+							<span class="emoji">❌</span>
+							<strong>Error Info</strong><br/>
+							is_error, failure details
+						</div>
+						<div class="item" style="border-color: var(--accent-gold);">
+							<span class="emoji">✅</span>
+							<strong>Response Flags</strong><br/>
+							is_final_response, agent state
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 15px;">
+						New feature? Add a new metadata key. <span class="c-gold">Zero migrations.</span>
+					</p>
+					<aside class="notes">
+						The message metadata field is JSONB — schemaless. We store
+						ticket context, catalog form data, KB citations, workflow
+						definitions, error info, response flags — all without a
+						single schema migration. New feature? Just add a key.
+					</aside>
+				</section>
+
+				<!-- Section 13: Comms Impact -->
+				<section class="section-title">
+					<h2>Impact</h2>
+					<h3>What the Communication Layer achieved</h3>
+				</section>
+
+				<!-- Slide: All context in one place -->
+				<section>
+					<h2>All Context, <span class="c-threads">One Place</span></h2>
+					<div class="comparison" style="max-width: 900px; margin: 30px auto;">
+						<div class="before">
+							<h3 class="c-red">Before</h3>
+							<div style="font-size: 3em; margin: 15px 0;">4</div>
+							<p class="medium">fragmented message stores</p>
+							<p class="medium c-dim">Slack + Teams + Tickets + Portal</p>
+						</div>
+						<div class="after">
+							<h3 class="c-deps">After</h3>
+							<div style="font-size: 3em; margin: 15px 0;">1</div>
+							<p class="medium">unified thread</p>
+							<p class="medium c-dim">= 1 conversation = 1 truth</p>
+						</div>
+					</div>
+					<aside class="notes">
+						The headline: from 4 fragmented systems to 1 unified
+						thread. Every message, every source, every participant —
+						all in one place. One thread, one conversation, one truth.
+					</aside>
+				</section>
+
+				<!-- Slide: No more missing history -->
+				<section>
+					<h2>No More <span class="c-deps">Missing</span> History</h2>
+					<div style="max-width: 700px; margin: 30px auto;">
+						<div class="flow" style="margin-bottom: 25px;">
+							<div class="step" style="border-color: #e1bee7;">Slack message</div>
+							<div class="arrow">→</div>
+							<div class="step" style="border-color: var(--threads-color);">Thread</div>
+							<div class="arrow">→</div>
+							<div class="step" style="border-color: var(--deps-color);">Ticket</div>
+						</div>
+						<div class="card">
+							<ul class="medium">
+								<li>Every Slack/Teams message captured in the thread</li>
+								<li>When a ticket is created, full history is <span class="c-deps">already there</span></li>
+								<li>IT agents see the complete conversation from the start</li>
+								<li>Users never have to repeat themselves</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						No more missing history. Every Slack and Teams message
+						is captured in the thread. When a ticket is created, the
+						full conversation history is already synced. IT agents
+						see everything from the start. Users never repeat themselves.
+					</aside>
+				</section>
+
+				<!-- Slide: Clean architecture -->
+				<section>
+					<h2>Clean <span class="c-gold">Separation</span></h2>
+					<div class="icon-grid" style="max-width: 900px; margin: 30px auto;">
+						<div class="item" style="border-color: var(--toolkit-color);">
+							<span class="emoji">🤖</span>
+							<strong>Agents</strong><br/>
+							Don't know about Slack or Teams
+						</div>
+						<div class="item" style="border-color: #e1bee7;">
+							<span class="emoji">💬</span>
+							<strong>Slack/Teams</strong><br/>
+							Don't know about agents
+						</div>
+						<div class="item" style="border-color: var(--deps-color);">
+							<span class="emoji">🎫</span>
+							<strong>Service Desk</strong><br/>
+							Don't know about Slack or Teams
+						</div>
+					</div>
+					<p class="fragment medium" style="margin-top: 25px;">
+						<span class="c-threads">Threads API</span> bridges everything.<br/>
+						Each component does one thing well.
+					</p>
+					<aside class="notes">
+						Clean separation of concerns. Agents just talk to Threads.
+						Slack processor just talks to Slack. Service desk just
+						talks to tickets. Nobody knows about the others. Threads
+						API is the bridge. Each component does one thing well.
+					</aside>
+				</section>
+
+				<!-- Slide: Scalability -->
+				<section>
+					<h2><span class="c-deps">Scalability</span></h2>
+					<div style="max-width: 700px; margin: 30px auto; text-align: left;">
+						<div class="card" style="margin-bottom: 15px;">
+							<h3 class="c-deps" style="margin-top: 0;">Add a new channel</h3>
+							<p class="medium">Email? WhatsApp? New chat platform?</p>
+							<p class="medium c-gold">Add a new processor. Zero changes to agents or service desk.</p>
+						</div>
+						<div class="card" style="margin-bottom: 15px;">
+							<h3 class="c-deps" style="margin-top: 0;">Scale independently</h3>
+							<p class="medium">Slack processor overwhelmed? Scale it up.</p>
+							<p class="medium c-dim">Other processors unaffected.</p>
+						</div>
+						<div class="card">
+							<h3 class="c-deps" style="margin-top: 0;">Failure isolation</h3>
+							<p class="medium">Teams processor down? SQS holds messages.</p>
+							<p class="medium c-dim">Slack, agents, and service desk keep running.</p>
+						</div>
+					</div>
+					<aside class="notes">
+						The pub/sub architecture gives us natural scalability.
+						New channel? Add a subscriber. Bottleneck? Scale that
+						processor. Failure? SQS holds messages, other processors
+						keep running. True decoupling.
+					</aside>
+				</section>
+
+				<!-- ============================================ -->
+				<!-- CLOSING                                      -->
+				<!-- ============================================ -->
+
+				<section class="section-title">
+					<h2>The Road Ahead</h2>
+					<h3>Where the journey leads</h3>
+				</section>
+
+				<!-- Slide: Summary -->
+				<section>
+					<h2>What We <span class="c-gold">Built</span></h2>
+					<div class="comparison" style="max-width: 900px; margin: 30px auto;">
+						<div class="card" style="border-left: 4px solid var(--toolkit-color);">
+							<h3 class="c-toolkit">Agent Engine</h3>
+							<ul class="medium">
+								<li>Single LLM call with tool-calling</li>
+								<li>15 modular toolkits</li>
+								<li>Smart gates for conditional activation</li>
+								<li>Lazy dependency injection</li>
+								<li>From ticket machine → problem solver</li>
+							</ul>
+						</div>
+						<div class="card" style="border-left: 4px solid var(--threads-color);">
+							<h3 class="c-threads">Communication Layer</h3>
+							<ul class="medium">
+								<li>Threads API — single source of truth</li>
+								<li>SNS/SQS pub/sub for event distribution</li>
+								<li>4 independent processors</li>
+								<li>Two-way ticket sync</li>
+								<li>From scattered messages → unified history</li>
+							</ul>
+						</div>
+					</div>
+					<aside class="notes">
+						To summarize: two major systems. The Agent Engine gave us
+						speed, modularity, and real problem-solving capabilities.
+						The Communication Layer gave us unified conversations
+						across all channels with reliable sync and clean architecture.
+					</aside>
+				</section>
+
+				<!-- Slide: The journey continues -->
+				<section>
+					<h2>The Journey <span class="c-gold">Continues</span></h2>
+					<div style="max-width: 700px; margin: 40px auto;">
+						<ul style="font-size: 0.85em;">
+							<li>More toolkits — more problems solved automatically</li>
+							<li>More channels — more ways to reach users</li>
+							<li>Smarter agents — learning from conversations</li>
+							<li>Better observability — deeper insights into agent behavior</li>
+						</ul>
+					</div>
+					<p class="fragment medium" style="margin-top: 30px; color: var(--accent-gold);">
+						The foundation is solid. The architecture scales.<br/>
+						Now it's about building on top of it.
+					</p>
+					<aside class="notes">
+						The journey continues. More toolkits, more channels,
+						smarter agents. The foundation is solid — modular,
+						scalable, observable. Everything we build from here
+						plugs into the same architecture.
+					</aside>
+				</section>
+
+				<!-- Slide: Thank you -->
+				<section>
+					<h1 style="margin-bottom: 0.3em;">Thank You</h1>
+					<div class="hero-cards" style="max-width: 600px; margin: 30px auto;">
+						<div class="hero-card" style="padding: 20px;">
+							<div class="hero-emoji" style="font-size: 2.5em;">🛡️</div>
+							<h3>Ser Dunk</h3>
+							<div class="subtitle">Ron</div>
+						</div>
+						<div class="hero-card" style="padding: 20px;">
+							<div class="hero-emoji" style="font-size: 2.5em;">🥚</div>
+							<h3>Egg</h3>
+							<div class="subtitle">Haim</div>
+						</div>
+					</div>
+					<p style="color: var(--accent-gold); font-style: italic; margin-top: 20px;">
+						"A knight who remembered his vows."
+					</p>
+					<p class="medium" style="margin-top: 30px;">Questions?</p>
+					<aside class="notes">
+						Thank you! Open for questions.
+					</aside>
+				</section>
+
 			</div>
 		</div>
 
@@ -29,13 +2151,13 @@
 		<script src="dist/plugin/markdown.js"></script>
 		<script src="dist/plugin/highlight.js"></script>
 		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
 			Reveal.initialize({
 				hash: true,
-
-				// Learn about plugins: https://revealjs.com/plugins/
+				width: 1280,
+				height: 720,
+				margin: 0.08,
+				transition: 'slide',
+				backgroundTransition: 'fade',
 				plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
 			});
 		</script>
